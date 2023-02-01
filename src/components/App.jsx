@@ -20,22 +20,20 @@ export const App = () => {
     }
     setLoading(true);
     setShowBtn(false);
-
     fetchImages(text, page)
       .then(({ data }) => {
         setImages(prev => [...prev, ...data.hits]);
-        setLoading(false);
-
-        if (page > data.total / 12) {
+        setShowBtn(page < Math.ceil(data.total / 12));
+        if (page < Math.ceil(data.total / 12)) {
           Notiflix.Notify.warning(
             "We're sorry, but you've reached the end of search results."
           );
-          return setShowBtn(false);
         }
-
-        setShowBtn(true);
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error(error))
+      .finally(() => {
+        setLoading(false);
+      });
   }, [page, text]);
 
   const onSubmit = text => {
